@@ -53,7 +53,7 @@ def save_images(valid_data, generator, e, offset_by_one=False):
 	# Note: matplotlib pyplot is able to print float values from [0, 1]
 	# in their original color (as long as they are floats). In other
 	# words, the graphing handles the conversion from grayscale to RGB
-	# (scalar multiply by 255). If the values are int from [0,  255],
+	# (scalar multiply by 255). If the values are int from [0, 255],
 	# then the graphing is already in RGB and is printed out with no
 	# need of conversion (no need to multiply by 255).
 	gen_img = generator.predict(src_img) #* 255.0
