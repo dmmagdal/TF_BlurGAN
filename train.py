@@ -218,6 +218,7 @@ def load_gopro_dataset():
 
 	return train_dataset, test_dataset
 
+
 def main():
 	# Load GoPro dataset.
 	train_data, valid_data = load_gopro_dataset()
@@ -258,7 +259,7 @@ def main():
 
 	# Train the GAN.
 	autotune = tf.data.AUTOTUNE
-	epochs = 50#500#1000#100
+	epochs = 300#50#100#300
 	batch_size = 4
 	train_data = train_data.prefetch(buffer_size=autotune)\
 		.batch(batch_size)

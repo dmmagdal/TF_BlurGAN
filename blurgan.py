@@ -22,9 +22,13 @@ from tqdm import tqdm
 
 
 class ResBlock(layers.Layer):
-	def __init__(self, filters, kernel_size=(3, 3), strides=(1, 1), 
+	def __init__(self, filters=64, kernel_size=(3, 3), strides=(1, 1), 
 			use_dropout=False, **kwargs):
 		super().__init__()
+		self.filters = filters
+		self.kernel_size = kernel_size
+		self.strides = strides
+
 		# self.pad_reflect = layers.ReflectionPadding2D((1, 1))
 		self.pad_reflect = layers.ZeroPadding2D((1, 1))
 		self.conv = layers.Conv2D(
@@ -66,6 +70,9 @@ class ResBlock(layers.Layer):
 		config = super(ResBlock, self).get_config()
 		config.update({
 			"use_dropout": self.use_dropout,
+			"filters": self.filters,
+			"kernel_size": self.kernel_size,
+			"strides": self.strides,
 		})
 		return config
 
@@ -77,7 +84,7 @@ def create_generator(inputs, num_blocks=9):
 
 	# x = layers.ReflectionPadding2D((3, 3))(inputs)
 	x = layers.ZeroPadding2D((3, 3))(inputs)
-	x = layers.Conv2D(ngf,kernel_size=(7, 7), padding="valid")(x)
+	x = layers.Conv2D(ngf, kernel_size=(7, 7), padding="valid")(x)
 	x = layers.BatchNormalization()(x)
 	x = layers.ReLU()(x)
 
