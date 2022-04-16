@@ -205,7 +205,6 @@ def perceptual_loss(y_true, y_pred):
 
 
 def wasserstein_loss(y_true, y_pred):
-	# return keras.metrics.Mean(y_true, y_pred)
 	return tf.math.reduce_mean(y_true * y_pred)
 
 
