@@ -104,9 +104,13 @@ def create_generator(inputs, num_blocks=9):
 
 	for i in range(n_downsampling):
 		mult = 2 ** (n_downsampling - 1)
-		x = layers.Conv2DTranspose(
-			int(ngf * multi / 2), kernel_size=(3, 3), strides=2, 
-			padding="same"
+		# x = layers.Conv2DTranspose(
+		# 	int(ngf * multi / 2), kernel_size=(3, 3), strides=2, 
+		# 	padding="same"
+		# )(x)
+		x = layers.UpSampling2D()(x)
+		x = layers.Conv2D(
+			filters=int(ngf * mult / 2), kernel_size=(3, 3), padding="same"
 		)(x)
 		x = layers.BatchNormalization()(x)
 		x = layers.ReLU()(x)
@@ -201,7 +205,8 @@ def perceptual_loss(y_true, y_pred):
 
 
 def wasserstein_loss(y_true, y_pred):
-	return keras.metrics.Mean(y_true, y_pred)
+	# return keras.metrics.Mean(y_true, y_pred)
+	return tf.math.reduce_mean(y_true * y_pred)
 
 
 def load_images(blur_file, sharp_file):

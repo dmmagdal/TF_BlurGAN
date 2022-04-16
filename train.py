@@ -16,6 +16,7 @@ from tensorflow.keras.models import load_model
 from blurgan import ResBlock
 from blurgan import create_generator, create_discriminator
 from blurgan import build_vgg19
+from blurgan import wasserstein_loss
 from utils import resize_images, scale_images, save_images
 from matplotlib import pyplot as plt
 
@@ -49,10 +50,12 @@ class BlurGAN(keras.Model):
 		self.gen_optimizer = gen_opt
 		self.d_loss_metric = keras.metrics.Mean(name="d_loss")
 		self.g_loss_metric = keras.metrics.Mean(name="g_loss")
-		self.d_loss_fn = keras.losses.BinaryCrossentropy()
+		#self.d_loss_fn = keras.losses.BinaryCrossentropy()
+		self.d_loss_fn = wasserstein_loss
 		self.g_loss_fn = self.vgg_loss # content loss
 		self.g_loss_fn2 = keras.losses.MeanSquaredError()
 		self.custom_loss_weights = [1e-3, 1]
+		# self.custom_loss_weights = [100, 1]
 
 
 	@property
@@ -108,10 +111,13 @@ class BlurGAN(keras.Model):
 			# falsely labeled generated image as "real" (We want the
 			# discriminator to try and wrongly label a generated image
 			# as real).
+			# g_loss2 = self.d_loss_fn(
+			# 	labels[-batch_size:, :], predictions[:batch_size, :], 
+			# 	self.custom_loss_weights[0]
+			# )
 			g_loss2 = self.d_loss_fn(
-				labels[-batch_size:, :], predictions[:batch_size, :], 
-				self.custom_loss_weights[0]
-			)
+				labels[-batch_size:, :], predictions[:batch_size, :]
+			) * self.custom_loss_weights[0]
 			# Raw MSE loss between HR and generated image.
 			# g_loss3 = self.g_loss_fn2(hr_imgs, fake_imgs, self.custom_loss_weights[1])
 			grads = gen_tape.gradient(
